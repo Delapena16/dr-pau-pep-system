@@ -30,9 +30,13 @@
     "express-validator": "^7.2.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.6.1"
+    "playwright": "^1.64.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "@playwright/test": "^1.64.1",
+    "jest": "^30.5.2",
+    "mongoose": "^9.11.2",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.3.1"
   }
 }
