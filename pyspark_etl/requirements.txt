@@ -1,0 +1,3 @@
+# Python & Big Data Dependencies for Dr. Pau Animal Bite Center PySpark ETL
+pyspark>=3.5.0
+pymongo>=4.6.0

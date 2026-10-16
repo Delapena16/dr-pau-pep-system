@@ -1,0 +1,662 @@
+/**
+ * ============================================================================
+ * FILE: public/css/styles.css
+ * PURPOSE: Clean, Uncluttered Clinical UI/UX Blueprint Stylesheet
+ * Designed for high readability during student academic panel defenses.
+ * ============================================================================
+ */
+
+:root {
+  --bg-page: #f4f7fb;
+  --bg-card: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-light: #ccfbf1;
+  --accent-blue: #1d4ed8;
+  --accent-blue-bg: #dbeafe;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
+  --purple: #6d28d9;
+  --purple-bg: #ede9fe;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* Header & Security Compliance Bar */
+.top-header {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+}
+
+.top-header h1 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.top-header .subtitle {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.security-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sec-pill {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e2e8f0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.user-session-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 118, 110, 0.25);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+}
+
+#currentUserBadge {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #5eead4;
+}
+
+/* RBAC Role Navigation Bar */
+.rbac-nav {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rbac-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rbac-tab {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.rbac-tab:hover {
+  background: #e2e8f0;
+}
+
+.rbac-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.role-tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.12);
+  font-weight: 500;
+}
+
+.rbac-notice {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* Main Workspace Layout */
+.main-container {
+  max-width: 1440px;
+  margin: 20px auto;
+  padding: 0 24px 40px;
+}
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.card-desc {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* KPI Row */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .kpi-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  background: #ffffff;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--primary);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-card.kpi-danger {
+  border-left-color: var(--danger);
+}
+
+.kpi-card.kpi-warning {
+  border-left-color: var(--warning);
+}
+
+.kpi-card.kpi-info {
+  border-left-color: var(--accent-blue);
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 4px 0;
+  color: #0f172a;
+}
+
+/* Forms */
+.clean-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group.small {
+  flex: 0 0 110px;
+  min-width: 90px;
+}
+
+.form-group.btn-align {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.form-group label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.form-group input,
+.form-group select {
+  padding: 8px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13.5px;
+  color: var(--text-main);
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+}
+
+/* Buttons */
+.btn {
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #334155;
+  color: #ffffff;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #94a3b8;
+  color: #f8fafc;
+}
+
+.modal-card .btn-outline {
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.badge-blue {
+  background: var(--accent-blue-bg);
+  color: var(--accent-blue);
+}
+
+.badge-green {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.badge-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.badge-warning {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.badge-purple {
+  background: var(--purple-bg);
+  color: var(--purple);
+}
+
+/* Tables */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.clean-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.clean-table th,
+.clean-table td {
+  text-align: left;
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.clean-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.clean-table tr:hover td {
+  background: #f8fafc;
+}
+
+/* PEP Schedule Preview Chips */
+.schedule-preview-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.schedule-preview-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.dose-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dose-chip {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.dose-chip strong {
+  color: var(--primary);
+  display: block;
+}
+
+/* Alert & Summary Boxes */
+.alert-box {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.alert-danger {
+  background: var(--danger-bg);
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.alert-info {
+  background: var(--accent-blue-bg);
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.patient-summary-banner {
+  background: #f1f5f9;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.section-subtitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 14px 0 8px;
+  color: #1e293b;
+}
+
+.audit-log-box {
+  max-height: 170px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px;
+  background: #f8fafc;
+  font-size: 12px;
+}
+
+.audit-item {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.audit-item:last-child {
+  border-bottom: none;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 460px;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.modal-header h2 {
+  font-size: 17px;
+}
+
+.modal-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.demo-role-Presets {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  background: #f1f5f9;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  font-size: 12px;
+}
+
+.btn-chip {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-chip:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.step-indicator {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.step-indicator.step-two {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+/* Toast Banner */
+.toast-banner {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  background: #0f172a;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  z-index: 1200;
+  max-width: 420px;
+  border-left: 4px solid #2dd4bf;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.mt-8 {
+  margin-top: 8px;
+}
+
+.mt-12 {
+  margin-top: 12px;
+}

@@ -1,0 +1,28 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables & secrets (CRITICAL: Never commit .env)
+.env
+.env.local
+.env.production
+
+# Operating system & editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# PySpark / Python generated data & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+pyspark_etl/data/
+*.log
+
+# Logs
+logs/
+*.log

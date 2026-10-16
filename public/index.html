@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr. Pau Animal Bite Center | PEP & Patient Record System</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <!-- ====================================================================
+       TOP CLINICAL HEADER & SECURITY COMPLIANCE STATUS BAR
+       ==================================================================== -->
+  <header class="top-header">
+    <div class="brand-block">
+      <div class="brand-badge">PEP</div>
+      <div>
+        <h1>Dr. Pau Animal Bite Center</h1>
+        <p class="subtitle">Patient Record &amp; Post-Exposure Prophylaxis (PEP) Management System</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="security-pills">
+        <span class="sec-pill" title="Passwords hashed with bcryptjs (12 salt rounds)">🔒 bcrypt (12 Rounds)</span>
+        <span class="sec-pill" title="2-Step Login with 5-Minute 6-Digit OTP">🛡️ 2-Step MFA</span>
+        <span class="sec-pill" title="Stateless JWT inside HttpOnly, Secure, SameSite=Strict Cookie">🍪 HttpOnly JWT</span>
+        <span class="sec-pill" id="connectionModeBadge">⚡ Connecting...</span>
+      </div>
+
+      <div class="user-session-box" id="userSessionBox">
+        <span id="currentUserBadge">Not Authenticated</span>
+        <button class="btn btn-outline btn-sm" id="openLoginModalBtn">2-Step MFA Login</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       ROLE-BASED ACCESS CONTROL (RBAC) NAVIGATION TABS
+       ==================================================================== -->
+  <nav class="rbac-nav">
+    <div class="rbac-tabs">
+      <button class="rbac-tab active" data-panel="receptionistPanel">
+        1. Receptionist Panel <span class="role-tag">Intake &amp; Queue</span>
+      </button>
+      <button class="rbac-tab" data-panel="physicianPanel">
+        2. Physician Panel <span class="role-tag">WHO Triage &amp; PEP Regimen</span>
+      </button>
+      <button class="rbac-tab" data-panel="adminPanel">
+        3. Super Admin Panel <span class="role-tag">RBAC, FEFO Inventory &amp; PySpark ETL</span>
+      </button>
+    </div>
+    <div class="rbac-notice" id="rbacAccessNotice">
+      Active View: <strong>Receptionist Panel</strong> — Front-desk walk-in registration &amp; daily PEP dose queue.
+    </div>
+  </nav>
+
+  <!-- Global Notification Toast -->
+  <div id="toastBanner" class="toast-banner hidden"></div>
+
+  <!-- ====================================================================
+       MAIN WORKSPACE CONTAINER
+       ==================================================================== -->
+  <main class="main-container">
+
+    <!-- ==================================================================
+         PANEL 1: RECEPTIONIST PANEL (Walk-In Registration & Daily Queue)
+         ================================================================== -->
+    <section id="receptionistPanel" class="role-panel active">
+      <div class="grid-2col">
+        <!-- Left Card: Walk-In Patient Registration Form -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Walk-In Animal Bite Registration</h2>
+            <span class="badge badge-blue">POST /api/receptionist/patients</span>
+          </div>
+          <p class="card-desc">
+            Collects data-minimized patient demographics and initial bite details. Automatically sets status to <strong>Pending Triage</strong> for the attending Physician.
+          </p>
+
+          <form id="walkInPatientForm" class="clean-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientFullName">Patient Full Name *</label>
+                <input type="text" id="patientFullName" required placeholder="e.g., Juan Dela Cruz" />
+              </div>
+              <div class="form-group small">
+                <label for="patientAge">Age *</label>
+                <input type="number" id="patientAge" min="0" max="120" required placeholder="24" />
+              </div>
+              <div class="form-group small">
+                <label for="patientSex">Sex *</label>
+                <select id="patientSex" required>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="patientContact">Contact Number (SMS Follow-Up) *</label>
+                <input type="text" id="patientContact" required placeholder="09171234567" />
+              </div>
+              <div class="form-group">
+                <label for="patientBarangay">Barangay (Outbreak Surveillance) *</label>
+                <select id="patientBarangay" required>
+                  <option value="Brgy. Commonwealth">Brgy. Commonwealth</option>
+                  <option value="Brgy. Batasan Hills">Brgy. Batasan Hills</option>
+                  <option value="Brgy. Holy Spirit">Brgy. Holy Spirit</option>
+                  <option value="Brgy. Payatas">Brgy. Payatas</option>
+                  <option value="Brgy. Fairview">Brgy. Fairview</option>
+                  <option value="Brgy. Tandang Sora">Brgy. Tandang Sora</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="exposureDate">Date of Bite / Exposure *</label>
+                <input type="date" id="exposureDate" required />
+              </div>
+              <div class="form-group">
+                <label for="animalType">Biting Animal *</label>
+                <select id="animalType" required>
+                  <option value="Dog">Dog</option>
+                  <option value="Cat">Cat</option>
+                  <option value="Bat">Bat</option>
+                  <option value="Monkey">Monkey</option>
+                  <option value="Rat">Rat</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="animalOwnershipStatus">Animal Status *</label>
+                <select id="animalOwnershipStatus">
+                  <option value="Stray / Wild">Stray / Wild</option>
+                  <option value="Pet - Unimmunized">Pet - Unimmunized</option>
+                  <option value="Pet - Immunized">Pet - Immunized</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="biteSite">Anatomical Bite Site *</label>
+                <input type="text" id="biteSite" required placeholder="e.g., Right Hand (Index Finger)" />
+              </div>
+              <div class="form-group">
+                <label for="exposureType">Exposure Type</label>
+                <select id="exposureType">
+                  <option value="Bite">Bite (Transdermal / Skin Break)</option>
+                  <option value="Scratch">Scratch with Abrasion</option>
+                  <option value="Saliva on Broken Skin">Saliva on Broken Skin</option>
+                  <option value="Licking of Intact Skin">Licking of Intact Skin</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="woundWashingDone" checked />
+              <label for="woundWashingDone">Immediate 15-minute soap &amp; water wound washing performed</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              + Register Walk-In Patient &amp; Send to Physician Triage
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Card: Indexed Search & Daily PEP Appointment Queue -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Patient Directory &amp; Today's PEP Queue</h2>
+            <span class="badge badge-green">Compound Indexed Lookup</span>
+          </div>
+
+          <div class="search-bar">
+            <input
+              type="text"
+              id="patientSearchInput"
+              placeholder="Search by Patient Code (PEP-2026-...), Full Name, Phone, or Barangay..."
+            />
+            <button class="btn btn-secondary" id="searchPatientsBtn">Search</button>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Patient Code</th>
+                  <th>Patient &amp; Barangay</th>
+                  <th>Exposure Details</th>
+                  <th>WHO Category</th>
+                  <th>PEP Status</th>
+                </tr>
+              </thead>
+              <tbody id="receptionistPatientTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PANEL 2: PHYSICIAN PANEL (WHO Category Triage & 5-Dose PEP Schedule)
+         ================================================================== -->
+    <section id="physicianPanel" class="role-panel hidden">
+      <!-- Top Alert Strip for Category III High-Risk & Defaulters -->
+      <div class="kpi-row">
+        <div class="kpi-card kpi-danger">
+          <span class="kpi-label">WHO Category III Cases (Mandatory RIG + ARV)</span>
+          <strong class="kpi-value" id="physicianCat3Count">0</strong>
+          <small>Transdermal bites / head-neck / stray animal exposures</small>
+        </div>
+        <div class="kpi-card kpi-warning">
+          <span class="kpi-label">Overdue PEP Dose Defaulters</span>
+          <strong class="kpi-value" id="physicianDefaulterCount">0</strong>
+          <small>Missed scheduled Day 3, Day 7, Day 14, or Day 28 shot</small>
+        </div>
+        <div class="kpi-card kpi-info">
+          <span class="kpi-label">Awaiting Initial Clinical Triage</span>
+          <strong class="kpi-value" id="physicianPendingTriageCount">0</strong>
+          <small>Walk-in patients registered by Receptionist</small>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Left Card: WHO Exposure Triage & PEP Schedule Calculator -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Clinical Triage &amp; PEP Schedule Generator</h2>
+            <span class="badge badge-purple">calculatePepScheduleDates()</span>
+          </div>
+          <p class="card-desc">
+            Select a patient, classify their wound under <strong>WHO Category I, II, or III</strong>, and automatically compute the 5-dose PEP regimen (Day 0, Day 3, Day 7, Day 14, Day 28).
+          </p>
+
+          <form id="physicianTriageForm" class="clean-form">
+            <div class="form-group">
+              <label for="triagePatientSelect">Select Patient for Clinical Evaluation *</label>
+              <select id="triagePatientSelect" required></select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="triageWhoCategory">WHO Rabies Exposure Category *</label>
+                <select id="triageWhoCategory" required>
+                  <option value="Category II">Category II — Minor scratches/abrasions without bleeding (ARV Regimen)</option>
+                  <option value="Category III">Category III — Transdermal bites, bleeding scratches, or saliva on mucosa (ARV + Mandatory RIG)</option>
+                  <option value="Category I">Category I — Touching/feeding animal, licks on intact skin (Wound washing only)</option>
+                </select>
+              </div>
+              <div class="form-group small">
+                <label for="triageDayZeroDate">Day 0 Start Date *</label>
+                <input type="date" id="triageDayZeroDate" required />
+              </div>
+            </div>
+
+            <!-- Dynamic Category III RIG Alert Box -->
+            <div id="rigRequirementBanner" class="alert-box alert-danger hidden">
+              <strong>⚠️ WHO Category III Protocol Alert:</strong> Rabies Immunoglobulin (RIG / ERIG) infiltration into and around the wound is <strong>MANDATORY</strong> in addition to the 5-dose vaccine schedule.
+              <div class="form-check mt-8">
+                <input type="checkbox" id="triageRigAdministered" checked />
+                <label for="triageRigAdministered">Confirm Equine/Human RIG infiltrated (Batch: EQB-2026-R309)</label>
+              </div>
+            </div>
+
+            <!-- Live Preview of calculatePepScheduleDates() -->
+            <div class="schedule-preview-box">
+              <div class="schedule-preview-title">
+                Generated 5-Dose PEP Timeline Preview (<code>calculatePepScheduleDates</code>):
+              </div>
+              <div class="dose-chips" id="livePepSchedulePreview">
+                <!-- Populated live by app.js -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="triageClinicalNotes">Attending Physician Clinical Notes</label>
+              <input
+                type="text"
+                id="triageClinicalNotes"
+                placeholder="e.g., Deep puncture wound on right index finger washed with povidone-iodine; advise 14-day dog observation."
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              Save WHO Classification &amp; Generate Embedded PEP Schedule
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Card: Embedded PEP Schedule & FEFO Vaccine Dose Administration -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Active Patient PEP Regimen &amp; FEFO Dose Administration</h2>
+            <span class="badge badge-green">Auto-FEFO Batch Deduction</span>
+          </div>
+          <p class="card-desc">
+            Administering a dose automatically deducts <strong>1 dose</strong> from the earliest-expiring non-expired vaccine batch in <code>Inventory</code> (First Expired, First Out).
+          </p>
+
+          <div id="selectedPatientTriageSummary" class="patient-summary-banner">
+            Select a patient on the left to inspect or administer their Day 0, Day 3, Day 7, Day 14, and Day 28 doses.
+          </div>
+
+          <div class="table-wrapper">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Dose</th>
+                  <th>Scheduled Date</th>
+                  <th>Status</th>
+                  <th>Vaccine Batch (FEFO)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="physicianPepScheduleTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PANEL 3: SUPER ADMIN PANEL (RBAC Staff, FEFO Inventory & PySpark ETL)
+         ================================================================== -->
+    <section id="adminPanel" class="role-panel hidden">
+      <!-- Top Executive KPI Cards -->
+      <div class="kpi-row">
+        <div class="kpi-card kpi-primary">
+          <span class="kpi-label">Total Registered Patients</span>
+          <strong class="kpi-value" id="adminTotalPatients">0</strong>
+          <small>Embedded MongoDB Documents</small>
+        </div>
+        <div class="kpi-card kpi-danger">
+          <span class="kpi-label">PySpark Outbreak Anomaly Alert</span>
+          <strong class="kpi-value" id="adminAnomalyHeadline">Brgy. Commonwealth (Z = +2.14)</strong>
+          <small>7-Day Category III Stray Bite Surge Detected</small>
+        </div>
+        <div class="kpi-card kpi-warning">
+          <span class="kpi-label">Low-Stock Vaccine Batches</span>
+          <strong class="kpi-value" id="adminLowStockCount">0</strong>
+          <small>FEFO Cold-Chain Threshold Monitor</small>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <!-- Left Card: Cold-Chain Vaccine & RIG Inventory (FEFO) -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Cold-Chain Vaccine &amp; RIG Inventory (FEFO Order)</h2>
+            <span class="badge badge-blue">POST /api/admin/inventory</span>
+          </div>
+
+          <form id="addInventoryForm" class="clean-form compact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="invItemName">Biologic / Vaccine Name *</label>
+                <input type="text" id="invItemName" required placeholder="e.g., Verorab (Purified Vero Cell)" />
+              </div>
+              <div class="form-group">
+                <label for="invCategory">Category *</label>
+                <select id="invCategory" required>
+                  <option value="Anti-Rabies Vaccine (ARV)">Anti-Rabies Vaccine (ARV)</option>
+                  <option value="Rabies Immunoglobulin (RIG)">Rabies Immunoglobulin (RIG)</option>
+                  <option value="Tetanus Toxoid">Tetanus Toxoid</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="invBatchNumber">Lot / Batch No. *</label>
+                <input type="text" id="invBatchNumber" required placeholder="VRB-2026-D405" />
+              </div>
+              <div class="form-group small">
+                <label for="invVials">Vials *</label>
+                <input type="number" id="invVials" min="1" value="20" required />
+              </div>
+              <div class="form-group small">
+                <label for="invDosesPerVial">Doses/Vial</label>
+                <input type="number" id="invDosesPerVial" min="1" value="5" required />
+              </div>
+              <div class="form-group">
+                <label for="invExpirationDate">Expiration Date (FEFO) *</label>
+                <input type="date" id="invExpirationDate" required />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">
+              + Restock Cold-Chain Batch
+            </button>
+          </form>
+
+          <div class="table-wrapper mt-12">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Batch (FEFO Order)</th>
+                  <th>Biologic Item</th>
+                  <th>Remaining Doses</th>
+                  <th>Expires On</th>
+                  <th>Burn Forecast</th>
+                </tr>
+              </thead>
+              <tbody id="adminInventoryTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right Card: Staff RBAC Provisioning & Security Audit Trail -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Staff RBAC Provisioning &amp; PySpark Barangay Analytics</h2>
+            <span class="badge badge-purple">12-Round bcrypt + RBAC</span>
+          </div>
+
+          <form id="createStaffForm" class="clean-form compact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="staffFullName">Staff Full Name *</label>
+                <input type="text" id="staffFullName" required placeholder="Dr. Camille Mendoza" />
+              </div>
+              <div class="form-group">
+                <label for="staffEmail">Official Email *</label>
+                <input type="email" id="staffEmail" required placeholder="cmendoza@drpauclinic.ph" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="staffPassword">Initial Password (min 8 chars) *</label>
+                <input type="password" id="staffPassword" minlength="8" required placeholder="••••••••" />
+              </div>
+              <div class="form-group">
+                <label for="staffRole">Strict RBAC Role *</label>
+                <select id="staffRole" required>
+                  <option value="Physician">Physician</option>
+                  <option value="Receptionist">Receptionist</option>
+                  <option value="SuperAdmin">SuperAdmin</option>
+                </select>
+              </div>
+              <div class="form-group btn-align">
+                <button type="submit" class="btn btn-primary btn-sm">+ Create Staff</button>
+              </div>
+            </div>
+          </form>
+
+          <h3 class="section-subtitle">PySpark ETL: Barangay Walk-In &amp; Category III Anomaly Monitor</h3>
+          <div class="table-wrapper">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Barangay</th>
+                  <th>Walk-In Patients</th>
+                  <th>Cat III Cases</th>
+                  <th>PySpark Z-Score Surveillance</th>
+                </tr>
+              </thead>
+              <tbody id="adminPySparkTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="section-subtitle mt-12">Immutable Security &amp; Clinical Audit Trail (AuditLog.js)</h3>
+          <div class="audit-log-box" id="adminAuditLogList">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       2-STEP MFA AUTHENTICATION MODAL (Step 1: Password -> Step 2: 5-Min OTP)
+       ==================================================================== -->
+  <div id="mfaLoginModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2>2-Step Multi-Factor Authentication (MFA)</h2>
+          <p>Modules 05, 06 &amp; 13 Security Compliance</p>
+        </div>
+        <button class="btn-close" id="closeLoginModalBtn">&times;</button>
+      </div>
+
+      <!-- Quick Role Fill Buttons for Academic Panel Defense Demo -->
+      <div class="demo-role-Presets">
+        <span>Quick Fill Defense Credentials:</span>
+        <button type="button" class="btn-chip" data-demo-role="SuperAdmin">SuperAdmin</button>
+        <button type="button" class="btn-chip" data-demo-role="Receptionist">Receptionist</button>
+        <button type="button" class="btn-chip" data-demo-role="Physician">Physician</button>
+      </div>
+
+      <!-- STEP 1: Email & Password Verification -->
+      <form id="loginStepOneForm" class="clean-form">
+        <div class="step-indicator">Step 1 of 2: Verify Staff Credentials (bcryptjs 12 Salt Rounds)</div>
+        <div class="form-group">
+          <label for="loginEmail">Official Clinic Email</label>
+          <input type="email" id="loginEmail" value="admin@drpauclinic.ph" required />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" value="Admin@12345" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          Verify Password &amp; Request 6-Digit MFA OTP &rarr;
+        </button>
+      </form>
+
+      <!-- STEP 2: 5-Minute Expiring 6-Digit OTP Verification -->
+      <form id="loginStepTwoForm" class="clean-form hidden">
+        <div class="step-indicator step-two">
+          Step 2 of 2: Enter 6-Digit OTP (Expires in <span id="otpCountdownTimer">05:00</span>)
+        </div>
+        <div id="demoOtpHintBox" class="alert-box alert-info"></div>
+        <div class="form-group">
+          <label for="loginOtpCode">6-Digit One-Time Password (OTP)</label>
+          <input
+            type="text"
+            id="loginOtpCode"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            placeholder="123456"
+            required
+          />
+        </div>
+        <div class="form-row">
+          <button type="button" class="btn btn-outline" id="backToStepOneBtn">&larr; Back</button>
+          <button type="submit" class="btn btn-primary">
+            Verify OTP &amp; Issue HttpOnly JWT Cookie
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
