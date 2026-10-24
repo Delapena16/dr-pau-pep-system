@@ -5,22 +5,29 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 const connectToDatabase = require('./config/db');
-const User = require('./models/User');
-const Patient = require('./models/Patient');
-const Inventory = require('./models/Inventory');
-const InventoryForecast = require('./models/InventoryForecast');
-
-const { getInitialTenDsGarciaPatients } = require('./controllers/authController');
-const { getDefaultPySparkAnalytics } = require('./controllers/physicianController');
+const { getPatients } = require('./controllers/receptionistController');
+const {
+  updatePatientDemographics,
+  toggleStaffAccountStatus,
+  logInventorySpoilageOrVoid,
+  getDashboardSummary,
+  getRecentAuditLogs,
+  logDataExport
+} = require('./controllers/adminController');
+const { ensureSettings } = require('./controllers/settingsController');
+const { verifyAuthenticationToken } = require('./middleware/authMiddleware');
+const { authorizeRoles } = require('./middleware/roleMiddleware');
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const receptionistRoutes = require('./routes/receptionistRoutes');
 const physicianRoutes = require('./routes/physicianRoutes');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 
@@ -30,14 +37,16 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://accounts.google.com'],
         scriptSrcAttr: ["'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
-        imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"]
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:', 'https://cdnjs.cloudflare.com'],
+        imgSrc: ["'self'", 'data:', 'https://*.googleusercontent.com'],
+        frameSrc: ["'self'", 'https://accounts.google.com'],
+        connectSrc: ["'self'", 'https://accounts.google.com', 'https://oauth2.googleapis.com']
       }
     },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     crossOriginEmbedderPolicy: false
   })
 );
@@ -52,6 +61,7 @@ app.use(
 app.use(express.json({ limit: '15kb' }));
 app.use(express.urlencoded({ extended: true, limit: '15kb' }));
 app.use(cookieParser());
+app.use(xss());
 
 // ito yung anu pang linis ng input na pumapasok para walang bastos na data
 app.use(
@@ -85,10 +95,49 @@ const apiRateLimiter = rateLimit({
 app.use('/api/auth', authRateLimiter);
 app.use('/api', apiRateLimiter);
 
+// Anti-caching middleware for sensitive clinical and patient records (OWASP & DOH compliance)
+const antiCacheMiddleware = (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+};
+
+app.use('/api/patients', antiCacheMiddleware);
+
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/receptionist', receptionistRoutes);
-app.use('/api/physician', physicianRoutes);
+app.use('/api/admin', antiCacheMiddleware, adminRoutes);
+app.use('/api/receptionist', antiCacheMiddleware, receptionistRoutes);
+app.use('/api/physician', antiCacheMiddleware, physicianRoutes);
+app.use('/api/settings', antiCacheMiddleware, settingsRoutes);
+
+// Dynamic patient list endpoint
+app.get('/api/patients', verifyAuthenticationToken, authorizeRoles('Receptionist', 'Physician', 'SuperAdmin'), getPatients);
+
+// ito yung direct endpoint para sa pag edit ng pasyente demographic lang
+app.put('/api/patients/demographics/:id', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), updatePatientDemographics);
+app.patch('/api/patients/demographics/:id', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), updatePatientDemographics);
+app.put('/api/patients/:id', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), updatePatientDemographics);
+app.patch('/api/patients/:id', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), updatePatientDemographics);
+
+// ito yung toggle route para sa deactivation / reactivation ng staff accounts
+app.patch('/api/staff/:id/toggle-status', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), toggleStaffAccountStatus);
+app.patch('/api/admin/staff/:id/toggle-status', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), toggleStaffAccountStatus);
+
+// ito yung direct endpoint para sa void o log spoilage ng vials
+app.post('/api/inventory/spoilage', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), logInventorySpoilageOrVoid);
+app.post('/api/inventory/void', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), logInventorySpoilageOrVoid);
+
+// Live KPI metrics for the Clinic Overview
+app.get('/api/dashboard/summary', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), getDashboardSummary);
+
+// Universal audit trail: 50 most recent entries, newest first
+app.get('/api/audit-logs', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), getRecentAuditLogs);
+
+// Data-privacy audit event for CSV exports (masked / unmasked)
+app.post('/api/admin/export-log', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), logDataExport);
+app.post('/api/dashboard/export-log', verifyAuthenticationToken, authorizeRoles('SuperAdmin'), logDataExport);
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -100,7 +149,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    etag: false,
+    lastModified: false,
+    setHeaders: (res) => {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+  })
+);
 
 app.use('/api/*', (req, res) => {
   res.status(404).json({
@@ -110,112 +167,14 @@ app.use('/api/*', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('Server error:', err.message);
-  res.status(err.status || 500).json({
+  console.error('Server unhandled error:', err.message || err);
+  const statusCode = err.status || err.statusCode || 500;
+  res.status(statusCode).json({
     success: false,
-    message: 'Something went wrong on the server. Please check your input and try again.'
+    error: 'Internal Server Error',
+    message: statusCode === 500 ? 'Internal Server Error' : (err.message || 'Internal Server Error')
   });
 });
-
-// ito yung pang lagay ng unang data, accounts, vials, 10 pasyente, forecast, para may laman agad pag first run
-const seedInitialClinicData = async () => {
-  if (mongoose.connection.readyState !== 1) {
-    return;
-  }
-
-  try {
-    const existingUsers = await User.countDocuments();
-    if (existingUsers === 0) {
-      await User.create([
-        {
-          fullName: 'Dr. Pauline Santos',
-          email: 'admin@drpauclinic.ph',
-          passwordHash: 'Admin@12345',
-          role: 'SuperAdmin'
-        },
-        {
-          fullName: 'Maria Clara Reyes',
-          email: 'receptionist@drpauclinic.ph',
-          passwordHash: 'Reception@12345',
-          role: 'Receptionist'
-        },
-        {
-          fullName: 'Dr. Jose Rizalino Cruz',
-          email: 'physician@drpauclinic.ph',
-          passwordHash: 'Physician@12345',
-          role: 'Physician'
-        }
-      ]);
-      console.log('Seeded default clinic staff accounts');
-    }
-
-    const existingVials = await Inventory.countDocuments();
-    if (existingVials < 3) {
-      await Inventory.deleteMany({});
-      await Inventory.create([
-        {
-          vaccineType: 'anti-rabies',
-          brandName: 'Verorab (Purified Vero Cell Rabies Vaccine)',
-          batchNumber: 'VRB-2026-A104',
-          currentStock: 84,
-          lowStockThreshold: 15,
-          expirationDate: new Date('2027-06-30')
-        },
-        {
-          vaccineType: 'anti-rabies',
-          brandName: 'Speeda (Purified Vero Cell Vaccine)',
-          batchNumber: 'SPD-2026-C219',
-          currentStock: 42,
-          lowStockThreshold: 15,
-          expirationDate: new Date('2027-08-15')
-        },
-        {
-          vaccineType: 'anti-tetanus',
-          brandName: 'Tetavax (Adsorbed Tetanus Toxoid 0.5mL)',
-          batchNumber: 'TTX-2026-B204',
-          currentStock: 36,
-          lowStockThreshold: 10,
-          expirationDate: new Date('2027-03-20')
-        },
-        {
-          vaccineType: 'ERIG',
-          brandName: 'Equirab (Equine Rabies Immunoglobulin 200 IU/mL)',
-          batchNumber: 'EQB-2026-R309',
-          currentStock: 7,
-          lowStockThreshold: 10,
-          expirationDate: new Date('2027-05-10')
-        }
-      ]);
-      console.log('Seeded starter vaccine inventory batches');
-    }
-
-    const seedDocs = getInitialTenDsGarciaPatients().map(({ _id, ...rest }) => rest);
-    const dsGarciaCount = await Patient.countDocuments({ barangay: /D\.S\. Garcia/i });
-    if (dsGarciaCount < 10) {
-      await Patient.deleteMany({});
-      await Patient.insertMany(seedDocs);
-      console.log('Seeded 10 Barangay D.S. Garcia patient records');
-    } else {
-      const clarissaSeed = seedDocs.find((p) => p.patientId === 'PEP-2026-002');
-      if (clarissaSeed) {
-        await Patient.findOneAndUpdate(
-          { patientId: 'PEP-2026-002' },
-          { $set: clarissaSeed },
-          { upsert: true }
-        );
-      }
-    }
-
-    const forecastCount = await InventoryForecast.countDocuments();
-    if (forecastCount === 0) {
-      const defaultForecast = getDefaultPySparkAnalytics();
-      await InventoryForecast.create(defaultForecast);
-      console.log('Seeded initial monthly stock forecast');
-    }
-  } catch (error) {
-    console.warn('Seed warning:', error.message);
-  }
-};
 
 const PORT = process.env.PORT || 5000;
 
@@ -245,9 +204,23 @@ const listenWithPortRecovery = (retried = false) => {
   });
 };
 
+process.on('unhandledRejection', (reason) => {
+  console.warn('Unhandled Rejection observed:', reason && reason.message ? reason.message : reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception caught:', err.message);
+});
+
 const startServer = async () => {
   await connectToDatabase();
-  await seedInitialClinicData();
+  // Ensure a default system settings document exists (RA 10173 unattended-terminal security).
+  try {
+    await ensureSettings();
+    console.log('System settings initialized.');
+  } catch (settingsErr) {
+    console.warn('System settings init warning:', settingsErr.message);
+  }
   listenWithPortRecovery();
 };
 
@@ -256,4 +229,3 @@ if (require.main === module) {
 }
 
 module.exports = app;
-module.exports.seedInitialClinicData = seedInitialClinicData;

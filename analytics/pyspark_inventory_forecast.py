@@ -1,5 +1,5 @@
 # ito yung script pang bilang ng demand ng vaccine kada buwan tsaka kagat kada purok
-# pang D.S. Garcia to, Cabanatuan
+# pang Kapitan Pepe to, Cabanatuan
 
 import hashlib
 import json
@@ -21,14 +21,14 @@ except ImportError:
     HAS_PYSPARK = False
 
 
-PUROKS_DS_GARCIA = [
-    "Purok 1 (Centro), Brgy. D.S. Garcia",
-    "Purok 2 (Mabini Ext.), Brgy. D.S. Garcia",
-    "Purok 3 (Rizal St.), Brgy. D.S. Garcia",
-    "Purok 4 (Del Pilar), Brgy. D.S. Garcia",
-    "Purok 5 (Maharlika), Brgy. D.S. Garcia",
-    "Purok 6 (Riverbank), Brgy. D.S. Garcia",
-    "Purok 7 (Narra St.), Brgy. D.S. Garcia",
+PUROKS_KAPITAN_PEPE = [
+    "Purok 1, Kapitan Pepe",
+    "Purok 2, Kapitan Pepe",
+    "Purok 3, Kapitan Pepe",
+    "Purok 4, Kapitan Pepe",
+    "Purok 5, Kapitan Pepe",
+    "Purok 6, Kapitan Pepe",
+    "Purok 7, Kapitan Pepe",
 ]
 
 
@@ -77,7 +77,7 @@ def run_pyspark_batch_aggregation(patients):
 
     try:
         spark = (
-            SparkSession.builder.appName("DrPau_DSGarcia_PEP_Forecast")
+            SparkSession.builder.appName("DrPau_KapitanPepe_PEP_Forecast")
             .master("local[*]")
             .config("spark.ui.enabled", "false")
             .getOrCreate()
@@ -185,7 +185,7 @@ def build_forecast_summary(patients=None, inventory=None):
 
     purok_breakdown = [
         {
-            "purok": "Purok 1 (Centro), Brgy. D.S. Garcia",
+            "purok": "Purok 1, Kapitan Pepe",
             "categoryI": 6,
             "categoryII": 24,
             "categoryIII": 14,
@@ -194,7 +194,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "HIGH SURGE",
         },
         {
-            "purok": "Purok 6 (Riverbank), Brgy. D.S. Garcia",
+            "purok": "Purok 6, Kapitan Pepe",
             "categoryI": 4,
             "categoryII": 19,
             "categoryIII": 12,
@@ -203,7 +203,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "HIGH SURGE",
         },
         {
-            "purok": "Purok 3 (Rizal St.), Brgy. D.S. Garcia",
+            "purok": "Purok 3, Kapitan Pepe",
             "categoryI": 5,
             "categoryII": 18,
             "categoryIII": 7,
@@ -212,7 +212,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "MODERATE",
         },
         {
-            "purok": "Purok 2 (Mabini Ext.), Brgy. D.S. Garcia",
+            "purok": "Purok 2, Kapitan Pepe",
             "categoryI": 4,
             "categoryII": 15,
             "categoryIII": 5,
@@ -221,7 +221,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "MODERATE",
         },
         {
-            "purok": "Purok 4 (Del Pilar), Brgy. D.S. Garcia",
+            "purok": "Purok 4, Kapitan Pepe",
             "categoryI": 3,
             "categoryII": 12,
             "categoryIII": 4,
@@ -230,7 +230,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "BASELINE",
         },
         {
-            "purok": "Purok 5 (Maharlika), Brgy. D.S. Garcia",
+            "purok": "Purok 5, Kapitan Pepe",
             "categoryI": 5,
             "categoryII": 11,
             "categoryIII": 3,
@@ -239,7 +239,7 @@ def build_forecast_summary(patients=None, inventory=None):
             "riskLevel": "BASELINE",
         },
         {
-            "purok": "Purok 7 (Narra St.), Brgy. D.S. Garcia",
+            "purok": "Purok 7, Kapitan Pepe",
             "categoryI": 2,
             "categoryII": 9,
             "categoryIII": 2,
@@ -289,7 +289,7 @@ def build_forecast_summary(patients=None, inventory=None):
 
     summary = {
         "generatedAt": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "clinicScope": "Barangay D.S. Garcia, Cabanatuan City",
+        "clinicScope": "Barangay Kapitan Pepe, Cabanatuan City",
         "datasetDigest": digest,
         "vialForecasts": vial_forecasts,
         "categoryBreakdown": category_breakdown,

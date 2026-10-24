@@ -39,11 +39,44 @@ const inventorySchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null
-    }
+    },
+    events: [
+      {
+        eventType: {
+          type: String,
+          enum: ['RESTOCKED', 'DOSE_DISPENSED', 'SPOILAGE_WRITE_OFF', 'CLERICAL_VOID'],
+          default: 'SPOILAGE_WRITE_OFF'
+        },
+        vialsDeducted: {
+          type: Number,
+          required: true
+        },
+        reason: {
+          type: String,
+          required: true,
+          trim: true
+        },
+        timestamp: {
+          type: Date,
+          default: Date.now
+        },
+        performedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          default: null
+        },
+        actorRole: {
+          type: String,
+          default: 'SuperAdmin'
+        }
+      }
+    ]
   },
   {
     timestamps: true
   }
 );
+
+inventorySchema.index({ batchLotId: 1 }, { sparse: true });
 
 module.exports = mongoose.model('Inventory', inventorySchema);

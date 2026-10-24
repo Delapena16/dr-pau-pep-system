@@ -48,7 +48,7 @@ def run_pyspark_etl_on_dataset(dataset_path):
 
             # Monthly walk-in totals by barangay
             trends_rows = (
-                deidentified_df.groupBy("monthYear", "barangay")
+                deidentified_df.groupBy("monthYear", "purok")
                 .agg(F.count("*").alias("walkInCount"))
                 .orderBy(F.col("monthYear").desc(), F.col("walkInCount").desc())
                 .limit(10)
@@ -57,7 +57,8 @@ def run_pyspark_etl_on_dataset(dataset_path):
             walk_in_trends = [
                 {
                     "month": r["monthYear"],
-                    "barangay": r["barangay"],
+                    "purok": r["purok"],
+                    "barangay": "Brgy. Kapitan Pepe",
                     "walkInCount": r["walkInCount"],
                 }
                 for r in trends_rows
@@ -122,7 +123,7 @@ def run_pyspark_etl_on_dataset(dataset_path):
             # Category III weekly surge check
             cat3_weekly_df = (
                 deidentified_df.filter(F.col("woundCategory") == "Category III")
-                .groupBy("weekWindow", "barangay")
+                .groupBy("weekWindow", "purok")
                 .agg(F.count("*").alias("categoryThreeCount"))
             )
 
@@ -148,7 +149,8 @@ def run_pyspark_etl_on_dataset(dataset_path):
                 surge_anomalies.append(
                     {
                         "weekWindow": r["weekWindow"],
-                        "barangay": r["barangay"],
+                        "purok": r["purok"],
+                        "barangay": "Brgy. Kapitan Pepe",
                         "categoryThreeCount": count_val,
                         "baselineMeanMu": round(mu_val, 2),
                         "baselineStdDevSigma": round(sigma_val, 2),
@@ -173,8 +175,8 @@ def run_pyspark_etl_on_dataset(dataset_path):
             rec.pop("contactNumber", None)
 
         walk_in_trends = [
-            {"month": "2026-10", "barangay": "Brgy. D.S. Garcia", "walkInCount": 242},
-            {"month": "2026-10", "barangay": "Brgy. Kapitan Pepe", "walkInCount": 156},
+            {"month": "2026-10", "purok": "Purok 1, Kapitan Pepe", "barangay": "Brgy. Kapitan Pepe", "walkInCount": 242},
+            {"month": "2026-10", "purok": "Purok 2, Kapitan Pepe", "barangay": "Brgy. Kapitan Pepe", "walkInCount": 156},
         ]
         vaccine_demand_forecast = {
             "upcoming30DayScheduledDoses": 412,
@@ -193,7 +195,8 @@ def run_pyspark_etl_on_dataset(dataset_path):
         surge_anomalies = [
             {
                 "weekWindow": "2026-W41",
-                "barangay": "Brgy. D.S. Garcia",
+                "purok": "Purok 1, Kapitan Pepe",
+                "barangay": "Brgy. Kapitan Pepe",
                 "categoryThreeCount": 49,
                 "baselineMeanMu": 18.2,
                 "baselineStdDevSigma": 6.4,

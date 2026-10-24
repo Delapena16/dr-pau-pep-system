@@ -20,7 +20,7 @@ const auditLogSchema = new mongoose.Schema(
     },
     targetCollection: {
       type: String,
-      enum: ['User', 'Patient', 'Inventory', 'AuthSession'],
+      enum: ['User', 'Patient', 'Inventory', 'AuthSession', 'Export', 'Dashboard'],
       required: true
     },
     description: {

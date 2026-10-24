@@ -76,11 +76,11 @@ const patientSchema = new mongoose.Schema(
     purok: {
       type: String,
       trim: true,
-      default: 'Purok 1 (Centro), Brgy. D.S. Garcia'
+      default: 'Purok 1, Kapitan Pepe'
     },
     barangay: {
       type: String,
-      required: [true, 'Purok address in Brgy. D.S. Garcia is required'],
+      required: [true, 'Purok address in Brgy. Kapitan Pepe is required'],
       trim: true
     },
     consentGiven: {
@@ -128,7 +128,8 @@ const patientSchema = new mongoose.Schema(
         'Under Treatment',
         'Ongoing Schedule',
         'Missed Dose',
-        'Completed'
+        'Completed',
+        'Wound Cleansing Only'
       ],
       default: 'Waiting for Doctor'
     },
@@ -159,5 +160,7 @@ const patientSchema = new mongoose.Schema(
 );
 
 patientSchema.index({ patientId: 1, 'pepSchedule.scheduledDate': 1 });
+patientSchema.index({ registryId: 1 }, { sparse: true });
+
 
 module.exports = mongoose.model('Patient', patientSchema);

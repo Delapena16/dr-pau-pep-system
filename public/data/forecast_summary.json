@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-10-17T08:00:00Z",
-  "clinicScope": "Barangay D.S. Garcia, Cabanatuan City",
+  "clinicScope": "Barangay Kapitan Pepe, Cabanatuan City",
   "vialForecasts": [
     {
       "vaccineType": "anti-rabies",
@@ -73,7 +73,7 @@
   ],
   "purokBreakdown": [
     {
-      "purok": "Purok 1 (Centro), Brgy. D.S. Garcia",
+      "purok": "Purok 1, Kapitan Pepe",
       "categoryI": 6,
       "categoryII": 24,
       "categoryIII": 14,
@@ -82,7 +82,7 @@
       "riskLevel": "HIGH SURGE"
     },
     {
-      "purok": "Purok 6 (Riverbank), Brgy. D.S. Garcia",
+      "purok": "Purok 6, Kapitan Pepe",
       "categoryI": 4,
       "categoryII": 19,
       "categoryIII": 12,
@@ -91,7 +91,7 @@
       "riskLevel": "HIGH SURGE"
     },
     {
-      "purok": "Purok 3 (Rizal St.), Brgy. D.S. Garcia",
+      "purok": "Purok 3, Kapitan Pepe",
       "categoryI": 5,
       "categoryII": 18,
       "categoryIII": 7,
@@ -100,7 +100,7 @@
       "riskLevel": "MODERATE"
     },
     {
-      "purok": "Purok 2 (Mabini Ext.), Brgy. D.S. Garcia",
+      "purok": "Purok 2, Kapitan Pepe",
       "categoryI": 4,
       "categoryII": 15,
       "categoryIII": 5,
@@ -109,7 +109,7 @@
       "riskLevel": "MODERATE"
     },
     {
-      "purok": "Purok 4 (Del Pilar), Brgy. D.S. Garcia",
+      "purok": "Purok 4, Kapitan Pepe",
       "categoryI": 3,
       "categoryII": 12,
       "categoryIII": 4,
@@ -118,7 +118,7 @@
       "riskLevel": "BASELINE"
     },
     {
-      "purok": "Purok 5 (Maharlika), Brgy. D.S. Garcia",
+      "purok": "Purok 5, Kapitan Pepe",
       "categoryI": 5,
       "categoryII": 11,
       "categoryIII": 3,
@@ -127,7 +127,7 @@
       "riskLevel": "BASELINE"
     },
     {
-      "purok": "Purok 7 (Narra St.), Brgy. D.S. Garcia",
+      "purok": "Purok 7, Kapitan Pepe",
       "categoryI": 2,
       "categoryII": 9,
       "categoryIII": 2,

@@ -56,6 +56,21 @@ const userSchema = new mongoose.Schema(
     lastLoginAt: {
       type: Date,
       default: null
+    },
+    // TOTP (Google Authenticator) fields for F2F onboarding
+    totpSecret: {
+      type: String,
+      default: null,
+      select: false
+    },
+    previousTotpSecrets: {
+      type: [String],
+      default: [],
+      select: false
+    },
+    isTotpSetup: {
+      type: Boolean,
+      default: false
     }
   },
   {

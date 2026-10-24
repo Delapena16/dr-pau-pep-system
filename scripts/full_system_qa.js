@@ -291,8 +291,8 @@ async function runFullSystemQa() {
         age: -5,
         sex: 'Male',
         contactNumber: '09178841209',
-        purok: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
-        barangay: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
+        purok: 'Purok 4, Kapitan Pepe',
+        barangay: 'Brgy. Kapitan Pepe',
         animalType: 'Dog',
         biteSite: 'Left Hand',
         consentGiven: true
@@ -313,8 +313,8 @@ async function runFullSystemQa() {
         age: 26,
         sex: 'Female',
         contactNumber: '12345',
-        purok: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
-        barangay: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
+        purok: 'Purok 4, Kapitan Pepe',
+        barangay: 'Brgy. Kapitan Pepe',
         animalType: 'Cat',
         biteSite: 'Right Wrist',
         consentGiven: true
@@ -326,7 +326,7 @@ async function runFullSystemQa() {
       'Edge-Case Validation: Invalid mobile number ("12345") rejected with HTTP 400'
     );
 
-    // Valid Walk-In Registration from Purok 4, Brgy. D.S. Garcia
+    // Valid Walk-In Registration from Purok 4, Kapitan Pepe
     const walkInRes = await httpRequest(
       'POST',
       '/api/receptionist/patients',
@@ -335,8 +335,8 @@ async function runFullSystemQa() {
         age: 27,
         sex: 'Male',
         contactNumber: '09178841209',
-        purok: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
-        barangay: 'Purok 4 (Del Pilar), Brgy. D.S. Garcia',
+        purok: 'Purok 4, Kapitan Pepe',
+        barangay: 'Brgy. Kapitan Pepe',
         animalType: 'Stray Dog',
         biteSite: 'Right Ankle',
         biteStatus: 'Unprovoked stray dog bite in Purok 4',
@@ -353,7 +353,7 @@ async function runFullSystemQa() {
         walkInPatient &&
         walkInPatient.purok.includes('Purok 4') &&
         walkInPatient.clinicalStatus === 'Waiting for Doctor',
-      'Receptionist registers new walk-in patient from Purok 4, Brgy. D.S. Garcia'
+      'Receptionist registers new walk-in patient from Purok 4, Kapitan Pepe'
     );
 
     const queueCheckRes = await httpRequest(

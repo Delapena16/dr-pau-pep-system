@@ -23,7 +23,12 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 const walkInValidators = [
-  body('fullName').trim().notEmpty().withMessage('Patient full name is required.'),
+  body('fullName')
+    .trim()
+    .notEmpty()
+    .withMessage('Patient full name is required.')
+    .matches(/^[a-zA-ZÀ-ÿ\s.\-]+$/)
+    .withMessage('Letters, spaces, dots, and hyphens only.'),
   body('age')
     .isInt({ min: 0, max: 120 })
     .withMessage('Patient age must be a valid number between 0 and 120.'),

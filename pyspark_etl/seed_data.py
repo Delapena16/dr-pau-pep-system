@@ -11,14 +11,16 @@ try:
 except ImportError:
     HAS_PYMONGO = False
 
-BARANGAYS = [
-    "Brgy. D.S. Garcia",
-    "Brgy. Kapitan Pepe",
-    "Brgy. Sangitan",
-    "Brgy. Mabini Homesite",
-    "Brgy. Sumacab Este",
-    "Brgy. Aduas Centro",
+PUROKS = [
+    "Purok 1, Kapitan Pepe",
+    "Purok 2, Kapitan Pepe",
+    "Purok 3, Kapitan Pepe",
+    "Purok 4, Kapitan Pepe",
+    "Purok 5, Kapitan Pepe",
+    "Purok 6, Kapitan Pepe",
+    "Purok 7, Kapitan Pepe",
 ]
+
 
 FIRST_NAMES = ["Juan", "Maria", "Jose", "Ana", "Carlo", "Bea", "Mark", "Angela", "Paolo", "Sofia"]
 LAST_NAMES = ["Dela Cruz", "Santos", "Reyes", "Ramos", "Mendoza", "Bautista", "Garcia", "Aquino"]
@@ -65,14 +67,15 @@ def generate_dataset(record_count):
     for i in range(1, record_count + 1):
         patient_id = f"PEP-2026-{i + 1000:05d}"
         full_name = f"{random.choice(FIRST_NAMES)} {random.choice(LAST_NAMES)}"
-        barangay = random.choice(BARANGAYS)
+        purok = random.choice(PUROKS)
+        barangay = "Brgy. Kapitan Pepe"
 
         days_ago = random.randint(0, 89)
         walk_in_date = today - timedelta(days=days_ago)
         iso_year, iso_week, _ = walk_in_date.isocalendar()
         week_label = f"{iso_year}-W{iso_week:02d}"
 
-        if barangay == "Brgy. D.S. Garcia" and days_ago <= 7:
+        if purok == "Purok 1, Kapitan Pepe" and days_ago <= 7:
             wound_category = "Category III" if random.random() < 0.78 else "Category II"
         else:
             wound_category = random.choices(
@@ -91,6 +94,7 @@ def generate_dataset(record_count):
                 "age": random.randint(5, 75),
                 "sex": random.choice(["Male", "Female"]),
                 "contactNumber": f"0917{random.randint(1000000, 9999999)}",
+                "purok": purok,
                 "barangay": barangay,
                 "consentGiven": True,
                 "day0WalkInDate": walk_in_date.strftime("%Y-%m-%d"),

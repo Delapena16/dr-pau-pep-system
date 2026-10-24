@@ -3,14 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dr. Pau Medical Center Inc. | Barangay D.S. Garcia ABTC &amp; PEP Registry</title>
+  <title>Dr. Pau Medical Center Inc. | Barangay Kapitan Pepe ABTC &amp; PEP Registry</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/styles.css?v=5" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
   <div id="toastMessage" class="toast-notification hidden" role="status" aria-live="polite"></div>
@@ -22,7 +30,7 @@
         <div class="auth-brand-text">
           <div class="auth-org-code">ABC Emergency • Animal Bite Treatment Center</div>
           <h1 class="auth-title">DR. PAU MEDICAL CENTER INC.</h1>
-          <p class="auth-subtitle">Primary Care Clinic &amp; Animal Bite Center — Barangay D.S. Garcia</p>
+          <p class="auth-subtitle">Primary Care Clinic &amp; Animal Bite Center — ETB Bldg, M. De Leon Ave, Kapitan Pepe, Cabanatuan City</p>
           <p class="auth-motto">"TRUSTED CARE, EXCELLENT SERVICE."</p>
         </div>
       </div>
@@ -57,15 +65,6 @@
         <button type="submit" class="btn btn-primary btn-block" id="loginStep1Btn">
           Sign In
         </button>
-
-        <div class="quick-accounts-hint">
-          <span class="hint-title">Demo Staff Accounts:</span>
-          <div class="hint-buttons">
-            <button type="button" class="role-select-btn" data-fill-role="Receptionist">Receptionist</button>
-            <button type="button" class="role-select-btn" data-fill-role="Physician">Physician</button>
-            <button type="button" class="role-select-btn" data-fill-role="SuperAdmin">SuperAdmin</button>
-          </div>
-        </div>
       </form>
 
       <form id="loginStep2Form" class="clinical-form hidden">
@@ -108,7 +107,7 @@
         <img src="/drpau-logo.jpg" alt="Dr. Pau Logo" class="sidebar-logo" />
         <div class="sidebar-brand-info">
           <span class="sidebar-org-title">DR. PAU MEDICAL CENTER</span>
-          <span class="sidebar-org-sub">Brgy. D.S. Garcia ABTC</span>
+          <span class="sidebar-org-sub">Brgy. Kapitan Pepe ABTC</span>
         </div>
       </div>
 
@@ -117,7 +116,7 @@
 
       <div class="sidebar-footer">
         <div class="sidebar-motto">"TRUSTED CARE, EXCELLENT SERVICE."</div>
-        <div class="sidebar-meta">Barangay D.S. Garcia, Cabanatuan City</div>
+        <div class="sidebar-meta">ETB Bldg, M. De Leon Ave, Kapitan Pepe, Cabanatuan City</div>
       </div>
     </aside>
 
@@ -129,7 +128,7 @@
             <span class="topbar-motto-tag">"TRUSTED CARE, EXCELLENT SERVICE."</span>
           </div>
           <p class="topbar-subtitle" id="workspaceSubtitle">
-            Primary Care Clinic &amp; Animal Bite Center — Barangay D.S. Garcia PEP Registry
+            Primary Care Clinic &amp; Animal Bite Center — Barangay Kapitan Pepe PEP Registry
           </p>
         </div>
 
@@ -146,7 +145,7 @@
         <section id="viewRecQueue" class="ehr-view hidden">
           <div class="view-header-bar">
             <div>
-              <h2 class="view-heading">Front Desk Queue — Barangay D.S. Garcia</h2>
+              <h2 class="view-heading">Front Desk Queue — Barangay Kapitan Pepe</h2>
             </div>
             <div class="view-header-actions">
               <button
@@ -154,14 +153,14 @@
                 class="btn btn-primary"
                 id="quickJumpRegisterWalkInBtn"
                 data-jump-nav="viewRecIntake"
-                data-focus-input="regFullName"
+                data-focus-input="patientName"
               >
                 + Register Walk-In Patient
               </button>
             </div>
           </div>
 
-          <div class="kpi-grid" id="recKpiGrid">
+          <div class="kpi-grid receptionist-cards-wrapper" id="recKpiGrid">
             <div class="kpi-card kpi-clickable" data-rec-kpi-filter="Waiting for Doctor">
               <span class="kpi-label">Needs Triage</span>
               <strong class="kpi-value tabular-num" id="recKpiWaitingDoctor">0</strong>
@@ -173,7 +172,7 @@
               <span class="kpi-meta">Day 3, 7, 14, or 28</span>
             </div>
             <div class="kpi-card kpi-clickable active-kpi" data-rec-kpi-filter="All">
-              <span class="kpi-label">Active Brgy. D.S. Garcia Records</span>
+              <span class="kpi-label">Active Brgy. Kapitan Pepe Records</span>
               <strong class="kpi-value tabular-num" id="recKpiTotalPatients">0</strong>
               <span class="kpi-meta">All enrolled patients</span>
             </div>
@@ -197,20 +196,20 @@
 
             <div class="toolbar-row">
               <div class="filter-tabs" id="recQueueFilterTabs">
-                <button type="button" class="filter-tab active" data-rec-queue-filter="All">All</button>
-                <button type="button" class="filter-tab" data-rec-queue-filter="Waiting for Doctor">Waiting</button>
-                <button type="button" class="filter-tab" data-rec-queue-filter="Due Today">Due Today</button>
-                <button type="button" class="filter-tab" data-rec-queue-filter="Category III">Category III</button>
-                <button type="button" class="filter-tab" data-rec-queue-filter="Missed Dose">Missed / Overdue</button>
+                <button type="button" class="filter-tab active" data-rec-queue-filter="All">All <span class="badge count-badge" id="count-rec-queue-all" data-count-key="all">0</span></button>
+                <button type="button" class="filter-tab" data-rec-queue-filter="Waiting for Doctor">Waiting <span class="badge count-badge" id="count-rec-queue-waiting" data-count-key="waiting">0</span></button>
+                <button type="button" class="filter-tab" data-rec-queue-filter="Due Today">Due Today <span class="badge count-badge" id="count-rec-queue-dueToday" data-count-key="dueToday">0</span></button>
+                <button type="button" class="filter-tab" data-rec-queue-filter="Category III">Category III <span class="badge count-badge" id="count-rec-queue-cat3" data-count-key="cat3">0</span></button>
+                <button type="button" class="filter-tab" data-rec-queue-filter="Missed Dose">Missed / Overdue <span class="badge count-badge" id="count-rec-queue-missed" data-count-key="missed">0</span></button>
               </div>
             </div>
 
-            <div class="table-container">
+            <div class="table-container table-scroll-container">
               <table class="clinical-table">
                 <thead>
                   <tr>
                     <th class="col-id">Registry ID</th>
-                    <th>Patient &amp; Purok (Brgy. D.S. Garcia)</th>
+                    <th>Patient &amp; Purok (Brgy. Kapitan Pepe)</th>
                     <th>Exposure</th>
                     <th class="num-col">Bite Date</th>
                     <th>Status</th>
@@ -232,15 +231,23 @@
 
           <div class="panel-card">
             <div class="panel-header">
-              <h3 class="panel-title">Patient Registration — Barangay D.S. Garcia</h3>
+              <h3 class="panel-title">Patient Registration — Barangay Kapitan Pepe</h3>
             </div>
 
-            <form id="walkInRegistrationForm" class="clinical-form">
+            <form id="walkInForm" class="clinical-form">
               <div class="form-section-title">Patient Information</div>
               <div class="grid-4">
                 <div class="form-group">
-                  <label for="regFullName">Full Name *</label>
-                  <input type="text" id="regFullName" required placeholder="e.g., Lorna Macaspac" />
+                  <label for="patientName">Full Name *</label>
+                  <input
+                    type="text"
+                    id="patientName"
+                    name="fullName"
+                    pattern="^[a-zA-ZÀ-ÿ\s\.\-]+$"
+                    title="Letters, spaces, dots, and hyphens only."
+                    required
+                    placeholder="e.g., Lorna Macaspac"
+                  />
                 </div>
                 <div class="form-group">
                   <label for="regAge">Age (Years) *</label>
@@ -255,14 +262,17 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="regContact">Mobile Number (11-Digit PH) *</label>
+                  <label for="mobileNumber">Mobile Number (11-Digit PH) *</label>
                   <input
-                    type="text"
-                    id="regContact"
+                    type="tel"
+                    id="mobileNumber"
+                    name="contactNumber"
                     class="mono-num"
-                    maxlength="13"
+                    pattern="^09[0-9]{9}$"
+                    maxlength="11"
+                    placeholder="09XXXXXXXXX"
+                    title="Must be 11 digits starting with 09 (e.g., 09123456789)"
                     required
-                    placeholder="09176428910"
                   />
                 </div>
               </div>
@@ -270,15 +280,15 @@
               <div class="form-section-title">Address &amp; Exposure Details</div>
               <div class="grid-4">
                 <div class="form-group">
-                  <label for="regBarangay">Purok in Barangay D.S. Garcia *</label>
+                  <label for="regBarangay">Purok in Barangay Kapitan Pepe *</label>
                   <select id="regBarangay" required>
-                    <option value="Purok 1 (Centro), Brgy. D.S. Garcia">Purok 1 (Centro), Brgy. D.S. Garcia</option>
-                    <option value="Purok 2 (Mabini Ext.), Brgy. D.S. Garcia">Purok 2 (Mabini Ext.), Brgy. D.S. Garcia</option>
-                    <option value="Purok 3 (Rizal St.), Brgy. D.S. Garcia">Purok 3 (Rizal St.), Brgy. D.S. Garcia</option>
-                    <option value="Purok 4 (Del Pilar), Brgy. D.S. Garcia">Purok 4 (Del Pilar), Brgy. D.S. Garcia</option>
-                    <option value="Purok 5 (Maharlika), Brgy. D.S. Garcia">Purok 5 (Maharlika), Brgy. D.S. Garcia</option>
-                    <option value="Purok 6 (Riverbank), Brgy. D.S. Garcia">Purok 6 (Riverbank), Brgy. D.S. Garcia</option>
-                    <option value="Purok 7 (Narra St.), Brgy. D.S. Garcia">Purok 7 (Narra St.), Brgy. D.S. Garcia</option>
+                    <option value="Purok 1, Kapitan Pepe">Purok 1, Kapitan Pepe</option>
+                    <option value="Purok 2, Kapitan Pepe">Purok 2, Kapitan Pepe</option>
+                    <option value="Purok 3, Kapitan Pepe">Purok 3, Kapitan Pepe</option>
+                    <option value="Purok 4, Kapitan Pepe">Purok 4, Kapitan Pepe</option>
+                    <option value="Purok 5, Kapitan Pepe">Purok 5, Kapitan Pepe</option>
+                    <option value="Purok 6, Kapitan Pepe">Purok 6, Kapitan Pepe</option>
+                    <option value="Purok 7, Kapitan Pepe">Purok 7, Kapitan Pepe</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -296,15 +306,15 @@
                   <input type="text" id="regBiteSite" required placeholder="e.g., Right Calf" />
                 </div>
                 <div class="form-group">
-                  <label for="regDay0Date">Date of Bite / Walk-In *</label>
-                  <input type="date" id="regDay0Date" class="mono-num" required />
+                  <label for="biteDate">Date of Bite / Walk-In *</label>
+                  <input type="date" id="biteDate" class="mono-num" required />
                 </div>
               </div>
 
               <div class="consent-banner">
                 <input type="checkbox" id="regConsentCheckbox" required checked />
                 <label for="regConsentCheckbox">
-                  <strong>Data Privacy Consent (RA 10173):</strong> Patient consents to recording contact and exposure details in the Barangay D.S. Garcia PEP Registry.
+                  <strong>Data Privacy Consent (RA 10173):</strong> Patient consents to recording contact and exposure details in the Barangay Kapitan Pepe PEP Registry.
                 </label>
               </div>
 
@@ -330,11 +340,11 @@
           <div class="panel-card">
             <div class="toolbar-row">
               <div class="filter-tabs" id="recFollowUpFilterTabs">
-                <button type="button" class="filter-tab active" data-rec-filter="All">All</button>
-                <button type="button" class="filter-tab" data-rec-filter="Waiting for Doctor">Waiting</button>
-                <button type="button" class="filter-tab" data-rec-filter="Due Today">Due Today</button>
-                <button type="button" class="filter-tab" data-rec-filter="Category III">Category III</button>
-                <button type="button" class="filter-tab" data-rec-filter="Missed Dose">Missed / Overdue</button>
+                <button type="button" class="filter-tab active" data-rec-filter="All">All <span class="badge count-badge" id="count-rec-followup-all" data-count-key="all">0</span></button>
+                <button type="button" class="filter-tab" data-rec-filter="Waiting for Doctor">Waiting <span class="badge count-badge" id="count-rec-followup-waiting" data-count-key="waiting">0</span></button>
+                <button type="button" class="filter-tab" data-rec-filter="Due Today">Due Today <span class="badge count-badge" id="count-rec-followup-dueToday" data-count-key="dueToday">0</span></button>
+                <button type="button" class="filter-tab" data-rec-filter="Category III">Category III <span class="badge count-badge" id="count-rec-followup-cat3" data-count-key="cat3">0</span></button>
+                <button type="button" class="filter-tab" data-rec-filter="Missed Dose">Missed / Overdue <span class="badge count-badge" id="count-rec-followup-missed" data-count-key="missed">0</span></button>
               </div>
               <input
                 type="text"
@@ -344,7 +354,7 @@
               />
             </div>
 
-            <div class="table-container">
+            <div class="table-container table-scroll-container">
               <table class="clinical-table">
                 <thead>
                   <tr>
@@ -368,7 +378,7 @@
             </div>
           </div>
 
-          <div class="kpi-grid" id="physKpiGrid">
+          <div class="kpi-grid physician-cards-wrapper" id="physKpiGrid">
             <div class="kpi-card kpi-clickable" data-phys-kpi-filter="Waiting for Doctor">
               <span class="kpi-label">Waiting for Triage</span>
               <strong class="kpi-value tabular-num" id="physKpiWaiting">0</strong>
@@ -405,15 +415,15 @@
 
               <div class="toolbar-row">
                 <div class="filter-tabs" id="physTriageFilterTabs">
-                  <button type="button" class="filter-tab active" data-phys-queue-filter="All">All</button>
-                  <button type="button" class="filter-tab" data-phys-queue-filter="Waiting for Doctor">Waiting</button>
-                  <button type="button" class="filter-tab" data-phys-queue-filter="Due Today">Due Today</button>
-                  <button type="button" class="filter-tab" data-phys-queue-filter="Category III">Category III</button>
-                  <button type="button" class="filter-tab" data-phys-queue-filter="Missed Dose">Missed / Overdue</button>
+                  <button type="button" class="filter-tab active" data-phys-queue-filter="All">All <span class="badge count-badge" id="count-phys-queue-all" data-count-key="all">0</span></button>
+                  <button type="button" class="filter-tab" data-phys-queue-filter="Waiting for Doctor">Waiting <span class="badge count-badge" id="count-phys-queue-waiting" data-count-key="waiting">0</span></button>
+                  <button type="button" class="filter-tab" data-phys-queue-filter="Due Today">Due Today <span class="badge count-badge" id="count-phys-queue-dueToday" data-count-key="dueToday">0</span></button>
+                  <button type="button" class="filter-tab" data-phys-queue-filter="Category III">Category III <span class="badge count-badge" id="count-phys-queue-cat3" data-count-key="cat3">0</span></button>
+                  <button type="button" class="filter-tab" data-phys-queue-filter="Missed Dose">Missed / Overdue <span class="badge count-badge" id="count-phys-queue-missed" data-count-key="missed">0</span></button>
                 </div>
               </div>
 
-              <div class="table-container">
+              <div class="table-container table-scroll-container">
                 <table class="clinical-table">
                   <thead>
                     <tr>
@@ -513,18 +523,18 @@
         <section id="viewPhysRecords" class="ehr-view hidden">
           <div class="view-header-bar">
             <div>
-              <h2 class="view-heading">Patient PEP Records — Barangay D.S. Garcia</h2>
+              <h2 class="view-heading">Patient PEP Records — Barangay Kapitan Pepe</h2>
             </div>
           </div>
 
           <div class="panel-card">
             <div class="toolbar-row">
               <div class="filter-tabs" id="physRecordsFilterTabs">
-                <button type="button" class="filter-tab active" data-phys-rec-filter="All">All</button>
-                <button type="button" class="filter-tab" data-phys-rec-filter="Waiting for Doctor">Waiting</button>
-                <button type="button" class="filter-tab" data-phys-rec-filter="Due Today">Due Today</button>
-                <button type="button" class="filter-tab" data-phys-rec-filter="Category III">Category III</button>
-                <button type="button" class="filter-tab" data-phys-rec-filter="Missed Dose">Missed / Overdue</button>
+                <button type="button" class="filter-tab active" data-phys-rec-filter="All">All <span class="badge count-badge" id="count-phys-records-all" data-count-key="all">0</span></button>
+                <button type="button" class="filter-tab" data-phys-rec-filter="Waiting for Doctor">Waiting <span class="badge count-badge" id="count-phys-records-waiting" data-count-key="waiting">0</span></button>
+                <button type="button" class="filter-tab" data-phys-rec-filter="Due Today">Due Today <span class="badge count-badge" id="count-phys-records-dueToday" data-count-key="dueToday">0</span></button>
+                <button type="button" class="filter-tab" data-phys-rec-filter="Category III">Category III <span class="badge count-badge" id="count-phys-records-cat3" data-count-key="cat3">0</span></button>
+                <button type="button" class="filter-tab" data-phys-rec-filter="Missed Dose">Missed / Overdue <span class="badge count-badge" id="count-phys-records-missed" data-count-key="missed">0</span></button>
               </div>
               <input
                 type="text"
@@ -534,7 +544,7 @@
               />
             </div>
 
-            <div class="table-container">
+            <div class="table-container table-scroll-container">
               <table class="clinical-table">
                 <thead>
                   <tr>
@@ -559,7 +569,7 @@
           </div>
 
           <div class="panel-card">
-            <div class="table-container">
+            <div class="table-container table-scroll-container">
               <table class="clinical-table">
                 <thead>
                   <tr>
@@ -578,10 +588,10 @@
           </div>
         </section>
 
-        <section id="viewAdminOverview" class="ehr-view hidden">
+        <section id="viewAdminDashboard" class="ehr-view hidden">
           <div class="view-header-bar">
             <div>
-              <h2 class="view-heading">Clinic Overview — Barangay D.S. Garcia ABTC</h2>
+              <h2 class="view-heading">Clinic Overview — Barangay Kapitan Pepe ABTC</h2>
             </div>
             <div class="view-header-actions">
               <button
@@ -593,56 +603,59 @@
               >
                 Restock Vaccine Vials
               </button>
-              <button
-                type="button"
-                class="btn btn-secondary"
-                id="quickJumpForecastBtn"
-                data-jump-nav="viewAdminForecast"
-              >
-                View Forecast
+              <button type="button" class="btn btn-secondary" id="refreshForecastBtn">
+                Update Forecast
               </button>
             </div>
           </div>
 
-          <div class="kpi-grid">
-            <div class="kpi-card kpi-clickable" data-jump-nav="viewAdminRegistry">
-              <span class="kpi-label">Active PEP Patients</span>
-              <strong class="kpi-value tabular-num" id="adminKpiPatients">0</strong>
-              <span class="kpi-meta">Barangay D.S. Garcia registry</span>
+          <!-- Row 1: Executive KPIs -->
+          <div class="kpi-grid superadmin-cards-wrapper">
+            <div class="kpi-card kpi-card-warn kpi-clickable" data-jump-nav="viewAdminRegistry">
+              <span class="kpi-label">Patients Due Today</span>
+              <strong class="kpi-value text-amber tabular-num" id="adminKpiDueToday">0</strong>
+              <span class="kpi-meta">Pending doses scheduled today</span>
+            </div>
+            <div class="kpi-card kpi-card-alert kpi-clickable" data-jump-nav="viewAdminRegistry">
+              <span class="kpi-label">Missed / Overdue Doses</span>
+              <strong class="kpi-value text-red tabular-num" id="adminKpiMissedDoses">0</strong>
+              <span class="kpi-meta">Defaulter &amp; overdue visits</span>
             </div>
             <div class="kpi-card kpi-clickable" data-jump-nav="viewAdminInventory">
-              <span class="kpi-label">Anti-Rabies Vials (PVRV)</span>
-              <strong class="kpi-value tabular-num" id="adminKpiRabies">0</strong>
-              <span class="kpi-meta">Verorab &amp; Speeda batches</span>
+              <span class="kpi-label">PVRV Stock Runway</span>
+              <strong class="kpi-value tabular-num" id="adminKpiStockRunway">0</strong>
+              <span class="kpi-meta" id="adminKpiStockRunwayMeta">Days of anti-rabies stock left</span>
             </div>
-            <div class="kpi-card kpi-card-alert kpi-clickable" data-jump-nav="viewAdminInventory">
-              <span class="kpi-label">Equine Immunoglobulin (ERIG)</span>
-              <strong class="kpi-value text-red tabular-num" id="adminKpiErig">0</strong>
-              <span class="kpi-meta">Equirab 200 IU/mL stock</span>
-            </div>
-            <div class="kpi-card kpi-clickable" data-jump-nav="viewAdminStaff">
-              <span class="kpi-label">Authorized Clinic Staff</span>
-              <strong class="kpi-value tabular-num" id="adminKpiStaffCount">0</strong>
-              <span class="kpi-meta">Role-restricted accounts</span>
+            <div class="kpi-card kpi-clickable" data-jump-nav="viewAdminRegistry">
+              <span class="kpi-label">High Surge Puroks</span>
+              <strong class="kpi-value tabular-num" id="adminKpiSurgePuroks">0</strong>
+              <span class="kpi-meta">Puroks above baseline cases</span>
             </div>
           </div>
 
-          <div class="split-grid-58-42">
+          <!-- Row 2: Inventory Health (60% demand projection / 40% lot summary) -->
+          <div class="grid-2-col">
             <div class="panel-card">
               <div class="panel-header">
-                <h3 class="panel-title">Recent Clinic Activity</h3>
+                <h3 class="panel-title">Current Stock vs. 30-Day &amp; 90-Day Projected Demand</h3>
+                <span class="cell-sub">Projected from walk-in and returning-patient trends</span>
               </div>
-              <div class="table-container">
-                <table class="clinical-table">
+              <div class="table-container table-scroll-container">
+                <table class="clinical-table forecast-fit-table">
                   <thead>
                     <tr>
-                      <th class="num-col">Timestamp</th>
-                      <th>Role</th>
-                      <th>Event</th>
-                      <th>Details</th>
+                      <th>Vaccine &amp; Brand</th>
+                      <th class="num-col">In Stock</th>
+                      <th class="num-col">Returning (30d)</th>
+                      <th class="num-col">New Walk-Ins</th>
+                      <th class="num-col">30-Day Demand</th>
+                      <th class="num-col">90-Day Demand</th>
+                      <th class="num-col">Days Left</th>
+                      <th class="num-col">Restock Qty</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody id="adminOverviewAuditBody"></tbody>
+                  <tbody id="forecastVialsTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -650,8 +663,9 @@
             <div class="panel-card">
               <div class="panel-header">
                 <h3 class="panel-title">Vaccine Stock Summary</h3>
+                <span class="cell-sub">Biologic lots, expiry and stock alerts</span>
               </div>
-              <div class="table-container">
+              <div class="table-container table-scroll-container">
                 <table class="clinical-table">
                   <thead>
                     <tr>
@@ -664,6 +678,103 @@
                   <tbody id="adminOverviewStockBody"></tbody>
                 </table>
               </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Master Analytics Graphs (Purok, Exposure Category, Weekly Trend) -->
+          <div class="analytics-grid-2x2">
+            <div class="panel-card chart-card">
+              <div class="panel-header">
+                <h3 class="panel-title">Bite Incidents by Purok (Barangay Kapitan Pepe)</h3>
+                <span class="cell-sub">WHO Exposure Category breakdown across Kapitan Pepe puroks</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="purokChart" aria-label="Bite Incidents by Purok (Stacked Bar Chart)"></canvas>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-header">
+                <h3 class="panel-title">Exposure Category Summary</h3>
+                <span class="cell-sub">Distribution of Category I, II, and III cases</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="exposurePieChart" aria-label="Exposure Category Summary (Doughnut Chart)"></canvas>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card" style="grid-column: 1 / -1;">
+              <div class="panel-header">
+                <h3 class="panel-title">Weekly Walk-In &amp; Vial Usage</h3>
+                <span class="cell-sub">Weekly intake against anti-rabies consumption</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="weeklyTrendGraph" aria-label="Weekly Walk-Ins vs Vials Used (line graph)"></canvas>
+              </div>
+              <div class="table-container table-scroll-container">
+                <table class="clinical-table forecast-fit-table">
+                  <thead>
+                    <tr>
+                      <th>Week Period</th>
+                      <th class="num-col">Walk-Ins</th>
+                      <th class="num-col">Cat III Cases</th>
+                      <th class="num-col">Vials Used</th>
+                    </tr>
+                  </thead>
+                  <tbody id="forecastWeeklyTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-header">
+                <h3 class="panel-title">PEP Regimen Compliance (Defaulter Drop-Off)</h3>
+                <span class="cell-sub">Drop-off indicates missed doses &amp; non-compliance</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="doseFunnelChart" aria-label="PEP regimen compliance funnel"></canvas>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card">
+              <div class="panel-header">
+                <h3 class="panel-title">Peak Clinic Traffic by Day</h3>
+                <span class="cell-sub">Patient visits by day of week (staff scheduling)</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="peakTrafficChart" aria-label="Peak clinic traffic by day of week"></canvas>
+              </div>
+            </div>
+
+            <div class="panel-card chart-card" style="grid-column: 1 / -1;">
+              <div class="panel-header">
+                <h3 class="panel-title">Daily Patient Mix: New vs. Returning</h3>
+                <span class="cell-sub">Daily patient volume and follow-up compliance tracking</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="patientMixChart" aria-label="Daily patient mix: new vs returning"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: System Audit Trail (full width) -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3 class="panel-title">Recent Clinic Activity</h3>
+              <span class="cell-sub">OTP dispatches, staff logins and system events</span>
+            </div>
+            <div class="table-container table-scroll-container">
+              <table class="clinical-table">
+                <thead>
+                  <tr>
+                    <th class="num-col">Timestamp</th>
+                    <th>Role</th>
+                    <th>Event</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="adminOverviewAuditBody"></tbody>
+              </table>
             </div>
           </div>
         </section>
@@ -681,7 +792,7 @@
                 <h3 class="panel-title">Current Clinic Vial Stock</h3>
               </div>
 
-              <div class="table-container">
+              <div class="table-container table-scroll-container">
                 <table class="clinical-table">
                   <thead>
                     <tr>
@@ -692,6 +803,7 @@
                       <th class="num-col">Threshold</th>
                       <th class="num-col">Expiry Date</th>
                       <th>Status</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody id="adminInventoryTableBody"></tbody>
@@ -736,8 +848,8 @@
                     <input type="number" id="invThreshold" class="tabular-num" min="1" value="10" required />
                   </div>
                   <div class="form-group">
-                    <label for="invExpirationDate">Expiration Date *</label>
-                    <input type="date" id="invExpirationDate" class="mono-num" required />
+                    <label for="restockExpiry">Expiration Date *</label>
+                    <input type="date" id="restockExpiry" class="mono-num" required />
                   </div>
                 </div>
 
@@ -754,104 +866,6 @@
           </div>
         </section>
 
-        <section id="viewAdminForecast" class="ehr-view hidden">
-          <div class="view-header-bar">
-            <div>
-              <h2 class="view-heading">Monthly Stock Forecast — Barangay D.S. Garcia</h2>
-            </div>
-            <div class="view-header-actions">
-              <button type="button" class="btn btn-primary" id="refreshForecastBtn">
-                Update Forecast
-              </button>
-            </div>
-          </div>
-
-          <div class="panel-card mb-16">
-            <div class="panel-header">
-              <h3 class="panel-title">Current Stock vs. 30-Day &amp; 90-Day Projected Demand</h3>
-            </div>
-
-            <div class="table-container">
-              <table class="clinical-table forecast-fit-table">
-                <thead>
-                  <tr>
-                    <th>Vaccine &amp; Brand</th>
-                    <th class="num-col">In Stock</th>
-                    <th class="num-col">Returning (30d)</th>
-                    <th class="num-col">New Walk-Ins</th>
-                    <th class="num-col">30-Day Demand</th>
-                    <th class="num-col">90-Day Demand</th>
-                    <th class="num-col">Days Left</th>
-                    <th class="num-col">Restock Qty</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="forecastVialsTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="split-grid-50-50">
-            <div class="panel-card">
-              <div class="panel-header">
-                <h3 class="panel-title">Bite Incidents by Purok (Barangay D.S. Garcia)</h3>
-              </div>
-
-              <div class="table-container">
-                <table class="clinical-table forecast-fit-table">
-                  <thead>
-                    <tr>
-                      <th>Purok Location</th>
-                      <th class="num-col">Cat I</th>
-                      <th class="num-col">Cat II</th>
-                      <th class="num-col">Cat III</th>
-                      <th class="num-col">Total</th>
-                      <th>Common Animal</th>
-                      <th>Alert Level</th>
-                    </tr>
-                  </thead>
-                  <tbody id="forecastPurokTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="panel-card">
-              <div class="panel-header">
-                <h3 class="panel-title">Exposure Category Summary &amp; Weekly Vial Usage</h3>
-              </div>
-
-              <div class="table-container mb-16">
-                <table class="clinical-table forecast-fit-table">
-                  <thead>
-                    <tr>
-                      <th>Category</th>
-                      <th>Standard Clinic Protocol</th>
-                      <th class="num-col">Cases</th>
-                      <th class="num-col">Share</th>
-                    </tr>
-                  </thead>
-                  <tbody id="forecastCategoryTableBody"></tbody>
-                </table>
-              </div>
-
-              <div class="panel-subheader-title">Weekly Walk-In &amp; Vial Usage</div>
-              <div class="table-container">
-                <table class="clinical-table forecast-fit-table">
-                  <thead>
-                    <tr>
-                      <th>Week Period</th>
-                      <th class="num-col">Walk-Ins</th>
-                      <th class="num-col">Cat III Cases</th>
-                      <th class="num-col">Vials Used</th>
-                    </tr>
-                  </thead>
-                  <tbody id="forecastWeeklyTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section id="viewAdminRegistry" class="ehr-view hidden">
           <div class="view-header-bar">
             <div>
@@ -862,21 +876,25 @@
           <div class="panel-card">
             <div class="toolbar-row">
               <div class="filter-tabs" id="adminRegistryFilterTabs">
-                <button type="button" class="filter-tab active" data-admin-reg-filter="All">All</button>
-                <button type="button" class="filter-tab" data-admin-reg-filter="Waiting for Doctor">Waiting</button>
-                <button type="button" class="filter-tab" data-admin-reg-filter="Due Today">Due Today</button>
-                <button type="button" class="filter-tab" data-admin-reg-filter="Category III">Category III</button>
-                <button type="button" class="filter-tab" data-admin-reg-filter="Missed Dose">Missed / Overdue</button>
+                <button type="button" class="filter-tab active" data-admin-reg-filter="All">All <span class="badge count-badge" id="count-all" data-count-key="all">0</span></button>
+                <button type="button" class="filter-tab" data-admin-reg-filter="Today's Queue">Today's Queue <span class="badge count-badge" id="count-today" data-count-key="today">0</span></button>
+                <button type="button" class="filter-tab" data-admin-reg-filter="Defaulters (Overdue)">Defaulters (Overdue) <span class="badge count-badge" id="count-overdue" data-count-key="overdue">0</span></button>
               </div>
               <input
                 type="text"
                 id="adminRegistrySearchInput"
                 class="search-input"
                 placeholder="Search registry by Patient Name, ID, or Purok..."
+                autocomplete="off"
               />
+              <div class="registry-mask-controls">
+                <button type="button" id="btnExportAnalytics" class="btn btn-outline-sm">
+                  <i class="fas fa-download"></i> Export Analytics (CSV)
+                </button>
+              </div>
             </div>
 
-            <div class="table-container">
+            <div class="table-container table-scroll-container">
               <table class="clinical-table">
                 <thead>
                   <tr>
@@ -885,6 +903,7 @@
                     <th>Exposure &amp; Clinical Notes</th>
                     <th>WHO Category</th>
                     <th>5-Dose PEP Schedule</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="adminRegistryTableBody"></tbody>
@@ -900,7 +919,28 @@
             </div>
           </div>
 
-          <div class="split-grid-40-60">
+          <div class="split-grid-65-35">
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title">Active Staff Directory</h3>
+              </div>
+
+              <div class="table-container table-scroll-container">
+                <table class="clinical-table">
+                  <thead>
+                    <tr>
+                      <th>Staff Member</th>
+                      <th>Clinic Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminStaffTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
             <div class="panel-card">
               <div class="panel-header">
                 <h3 class="panel-title" id="staffFormHeading">Add Staff Account</h3>
@@ -910,7 +950,14 @@
                 <input type="hidden" id="staffEditId" value="" />
                 <div class="form-group">
                   <label for="staffFullName">Full Name *</label>
-                  <input type="text" id="staffFullName" required placeholder="e.g., Dr. Camille Mendoza" />
+                  <input
+                    type="text"
+                    id="staffFullName"
+                    pattern="^[a-zA-Z\s\.\-]+$"
+                    title="Letters, spaces, dots, and dashes only"
+                    required
+                    placeholder="e.g., Dr. Camille Mendoza"
+                  />
                 </div>
 
                 <div class="form-group">
@@ -921,7 +968,7 @@
                 <div class="grid-2">
                   <div class="form-group">
                     <label for="staffPassword" id="staffPasswordLabel">Password (min 8 chars) *</label>
-                    <input type="password" id="staffPassword" minlength="8" required placeholder="Minimum 8 characters" />
+                    <input type="password" id="staffPassword" minlength="8" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, and one number" required placeholder="Minimum 8 characters" />
                   </div>
                   <div class="form-group">
                     <label for="staffRole">Role *</label>
@@ -943,33 +990,33 @@
                 </div>
               </form>
             </div>
+          </div>
 
-            <div class="panel-card">
-              <div class="panel-header">
-                <h3 class="panel-title">Active Staff Directory</h3>
-              </div>
-
-              <div class="table-container">
-                <table class="clinical-table">
-                  <thead>
-                    <tr>
-                      <th>Staff Member</th>
-                      <th>Clinic Email</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="adminStaffTableBody"></tbody>
-                </table>
-              </div>
+          <div class="panel-card" style="margin-top: 16px;">
+            <div class="panel-header">
+              <h3 class="panel-title">Security Settings</h3>
+              <span class="cell-sub">RA 10173 unattended-terminal security policy</span>
+            </div>
+            <div class="settings-card" style="padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+              <h4>Auto-Logout Inactivity Timer</h4>
+              <label for="sessionTimeout">Auto-Logout Inactivity Timer:</label>
+              <select id="sessionTimeout" class="form-control" style="width: 200px; display: inline-block; margin-right: 10px;">
+                <option value="5">5 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="60">60 Minutes</option>
+              </select>
+              <button id="btnSaveSettings" class="btn btn-purple">Update Security Policy</button>
+              <p class="cell-sub" style="margin-top: 8px;">
+                Automatically signs out staff after the configured period of inactivity.
+              </p>
             </div>
           </div>
         </section>
       </div>
 
       <footer class="ehr-footer">
-        <span><strong>DR. PAU MEDICAL CENTER INC.</strong> — Primary Care Clinic &amp; Animal Bite Center (Barangay D.S. Garcia, Cabanatuan City)</span>
+        <span><strong>DR. PAU MEDICAL CENTER INC.</strong> — Primary Care Clinic &amp; Animal Bite Center (ETB Bldg, M. De Leon Ave, Kapitan Pepe, Cabanatuan City)</span>
         <span class="footer-motto">"TRUSTED CARE, EXCELLENT SERVICE."</span>
       </footer>
     </div>
@@ -1009,6 +1056,66 @@
     </div>
   </div>
 
-  <script src="/js/app.js"></script>
+  <div id="editPatientModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-heading">Edit Patient Demographics</h3>
+      </div>
+      <form id="editPatientForm" class="clinical-form">
+        <div class="modal-body">
+          <p class="modal-description mb-16">
+            Only demographic data can be updated. Medical category, dose records, and clinical assessments remain locked.
+          </p>
+          <input type="hidden" id="editPatientId" />
+          <div class="form-group mb-12">
+            <label for="editPatientName">Patient Name *</label>
+            <input
+              type="text"
+              id="editPatientName"
+              pattern="^[a-zA-Z\s\.\-]+$"
+              title="Letters, spaces, dots, and dashes only"
+              required
+              placeholder="Full Name"
+            />
+          </div>
+          <div class="form-group mb-12">
+            <label for="editPatientPhone">Phone Number (11-Digit PH) *</label>
+            <input
+              type="text"
+              id="editPatientPhone"
+              class="mono-num"
+              pattern="^09[0-9]{9}$"
+              title="11-digit mobile number starting with 09"
+              maxlength="11"
+              required
+              placeholder="09171234567"
+            />
+          </div>
+          <div class="form-group">
+            <label for="editPatientPurok">Purok (Barangay Kapitan Pepe) *</label>
+            <select id="editPatientPurok" required>
+              <option value="Purok 1, Kapitan Pepe">Purok 1, Kapitan Pepe</option>
+              <option value="Purok 2, Kapitan Pepe">Purok 2, Kapitan Pepe</option>
+              <option value="Purok 3, Kapitan Pepe">Purok 3, Kapitan Pepe</option>
+              <option value="Purok 4, Kapitan Pepe">Purok 4, Kapitan Pepe</option>
+              <option value="Purok 5, Kapitan Pepe">Purok 5, Kapitan Pepe</option>
+              <option value="Purok 6, Kapitan Pepe">Purok 6, Kapitan Pepe</option>
+              <option value="Purok 7, Kapitan Pepe">Purok 7, Kapitan Pepe</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="saveEditPatientBtn">
+            Save Demographics
+          </button>
+          <button type="button" class="btn btn-secondary" id="cancelEditPatientBtn">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/app.js?v=32"></script>
 </body>
 </html>

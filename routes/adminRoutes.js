@@ -4,10 +4,16 @@ const {
   createStaffUserAccount,
   updateStaffUserAccount,
   deleteStaffUserAccount,
+  toggleStaffAccountStatus,
   getAllStaffUsers,
   addOrRestockVaccineBatch,
   getInventoryStatusAndAlerts,
-  getSystemAuditLogsAndAnalyticsSummary
+  logInventorySpoilageOrVoid,
+  getSystemAuditLogsAndAnalyticsSummary,
+  updatePatientDemographics,
+  getDashboardSummary,
+  getRecentAuditLogs,
+  logDataExport
 } = require('../controllers/adminController');
 const {
   getPySparkAnalyticsSummary,
@@ -78,10 +84,13 @@ router.post('/staff', staffValidators, createStaffUserAccount);
 router.get('/users', getAllStaffUsers);
 router.get('/staff', getAllStaffUsers);
 router.put('/staff/:id', staffUpdateValidators, updateStaffUserAccount);
+router.patch('/staff/:id/toggle-status', toggleStaffAccountStatus);
 router.delete('/staff/:id', deleteStaffUserAccount);
 
 router.post('/inventory', restockValidators, addOrRestockVaccineBatch);
 router.post('/inventory/restock', restockValidators, addOrRestockVaccineBatch);
+router.post('/inventory/spoilage', logInventorySpoilageOrVoid);
+router.post('/inventory/void', logInventorySpoilageOrVoid);
 router.get('/inventory', getInventoryStatusAndAlerts);
 
 router.get('/forecast', getPySparkAnalyticsSummary);
@@ -89,7 +98,27 @@ router.post('/forecast/recalculate', recalculateMonthlyForecast);
 router.get('/analytics-summary', getSystemAuditLogsAndAnalyticsSummary);
 router.get('/overview', getSystemAuditLogsAndAnalyticsSummary);
 router.get('/audit-logs', getSystemAuditLogsAndAnalyticsSummary);
+router.get('/audit-trail', getRecentAuditLogs);
+router.get('/dashboard/summary', getDashboardSummary);
+router.post('/export-log', logDataExport);
+
+const patientDemographicsValidators = [
+  body('fullName').trim().notEmpty().withMessage('Patient full name is required.'),
+  body('contactNumber')
+    .trim()
+    .custom((val) => {
+      const digitsOnly = String(val || '').replace(/\D/g, '');
+      return /^09\d{9}$/.test(digitsOnly);
+    })
+    .withMessage('Please enter a valid 11-digit mobile number starting with 09 (e.g., 09171234567).'),
+  body('purok').trim().notEmpty().withMessage('Purok address is required.'),
+  handleValidationErrors
+];
 
 router.get('/patients', getPatientsAndDailyQueue);
+router.put('/patients/demographics/:id', patientDemographicsValidators, updatePatientDemographics);
+router.patch('/patients/demographics/:id', patientDemographicsValidators, updatePatientDemographics);
+router.put('/patients/:id', patientDemographicsValidators, updatePatientDemographics);
+router.patch('/patients/:id', patientDemographicsValidators, updatePatientDemographics);
 
 module.exports = router;

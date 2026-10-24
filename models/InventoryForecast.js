@@ -9,7 +9,7 @@ const inventoryForecastSchema = new mongoose.Schema(
     },
     clinicScope: {
       type: String,
-      default: 'Barangay D.S. Garcia, Cabanatuan City'
+      default: 'Barangay Kapitan Pepe, Cabanatuan City'
     },
     vialForecasts: [
       {
